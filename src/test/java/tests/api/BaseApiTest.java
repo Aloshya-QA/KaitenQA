@@ -1,6 +1,6 @@
 package tests.api;
 
-import api.kaiten.dto.KaitenService;
+import api.kaiten.KaitenService;
 import org.testng.annotations.BeforeClass;
 import utils.PropertyReader;
 

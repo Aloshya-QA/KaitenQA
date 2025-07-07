@@ -1,11 +1,11 @@
-package api.kaiten.dto;
+package api.kaiten;
 
 import api.kaiten.dto.request.CreatePasswordRq;
 import api.kaiten.dto.responce.CreatePasswordRs;
 import api.kaiten.dto.responce.GetCurrentUserDataRs;
 
-import static api.kaiten.dto.KaitenClient.createPassword;
-import static api.kaiten.dto.KaitenClient.getCurrentUserData;
+import static api.kaiten.KaitenClient.createPassword;
+import static api.kaiten.KaitenClient.getCurrentUserData;
 
 public class KaitenService {
 

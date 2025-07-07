@@ -1,17 +1,11 @@
-package api.kaiten.dto;
+package api.kaiten;
 
 import api.kaiten.dto.request.CreatePasswordRq;
 import api.kaiten.dto.responce.CreatePasswordRs;
 import api.kaiten.dto.responce.GetCurrentUserDataRs;
-import api.tempMail.dto.request.CreateMailRq;
-import api.tempMail.dto.response.CreateMailRs;
-import api.tempMail.dto.response.MessagesRs;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.restassured.http.ContentType;
-import utils.PropertyReader;
-
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
