@@ -84,7 +84,7 @@ public abstract class BaseTest {
         Configuration.baseUrl = "https://passport.kaiten.ru";
         Configuration.timeout = 15000;
         Configuration.clickViaJs = true;
-        Configuration.browserSize = null;
+        Configuration.browserSize = "1366x768";
 
         registrationPage = new RegistrationPage();
         loginPage = new LoginPage();
@@ -134,10 +134,10 @@ public abstract class BaseTest {
         options.addArguments("--disable-notifications");
         options.addArguments("--disable-popup-blocking");
         options.addArguments("--disable-infobars");
-//        options.addArguments("--headless");
-//        options.addArguments("--no-sandbox");
-//        options.addArguments("--disable-dev-shm-usage");
-//        options.addArguments("--disable-gpu");
+        options.addArguments("--headless");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
         options.addArguments("--start-maximized");
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.setExperimentalOption("excludeSwitches",
@@ -149,10 +149,10 @@ public abstract class BaseTest {
         log.info("Init Edge options");
         EdgeOptions options = new EdgeOptions();
         options.addArguments("--start-maximized");
-//        options.addArguments("--headless");
-//        options.addArguments("--no-sandbox");
-//        options.addArguments("--disable-dev-shm-usage");
-//        options.addArguments("--disable-gpu");
+        options.addArguments("--headless");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.setExperimentalOption("excludeSwitches",
                 Collections.singletonList("enable-automation"));
