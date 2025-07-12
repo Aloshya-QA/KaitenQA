@@ -1,5 +1,6 @@
 package pages;
 
+import api.tempMail.TempMailService;
 import lombok.extern.log4j.Log4j2;
 import org.testng.Assert;
 
@@ -42,6 +43,7 @@ public class LoginPage {
     }
 
     public LoginPage inputEmail(String email) {
+        new TempMailService().getMessageCount();
         log.info("Inputting email: {}", email);
         $("#email_username").setValue(email).submit();
         $("#notistack-snackbar").shouldBe(visible);

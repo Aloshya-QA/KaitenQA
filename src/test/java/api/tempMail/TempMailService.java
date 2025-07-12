@@ -7,13 +7,12 @@ import api.tempMail.dto.response.GetMessagesRs;
 import lombok.extern.log4j.Log4j2;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import static api.tempMail.TempMailClient.*;
-import static utils.PropertyReader.getProperty;
+import static utils.PropertyReader.*;
 
 @Log4j2
 public class TempMailService {
@@ -50,39 +49,54 @@ public class TempMailService {
         return getAuthToken(rq).token;
     }
 
-    public List<String> getEmailSubjects() throws InterruptedException {
-        Thread.sleep(5000);
-        List<GetMessagesRs> messages = getMessages(getProperty("mailboxApiToken"));
-        List<String> subjects = new ArrayList<>();
-        for (GetMessagesRs message : messages) {
-            subjects.add(message.subject);
+    public int getMessageCount() {
+        String token = getProperty("mailboxApiToken");
+        List<GetMessagesRs> messages = getMessages(token);
+        int count = messages.size();
+
+        if (count == 0) {
+            setProperty("messageCount", "0");
+        } else {
+            setProperty("messageCount", String.valueOf(count));
         }
-        return subjects;
+        saveProperties();
+
+        log.info("Total messages in mailbox: {}", count);
+        return count;
     }
 
-    private String getMessageId(String subjectText) {
-        String threadKey = Thread.currentThread().getName();
-        String testStartTime = getProperty("testStartTime_" + threadKey);
-        Instant startTime = Instant.parse(testStartTime);
+    public String getMessageId(String subjectText) {
+        String token = getProperty("mailboxApiToken");
+
+        int messageCount = Integer.parseInt(getProperty("messageCount"));
+        log.info("Message count {}", messageCount);
 
         int maxAttempts = 10;
         int delaySeconds = 2;
 
         for (int i = 0; i < maxAttempts; i++) {
-            List<GetMessagesRs> messages = getMessages(getProperty("mailboxApiToken"));
+            int currentCount = getMessageCount();
 
-            Optional<String> messageId = messages.stream()
-                    .filter(message -> message.subject != null && message.subject.toLowerCase().contains(subjectText.toLowerCase()))
-                    .filter(message -> Instant.parse(message.updatedAt).isAfter(startTime))
-                    .max(Comparator.comparing(message -> Instant.parse(message.updatedAt)))
-                    .map(message -> message.id);
+            if (currentCount > messageCount) {
+                log.info("New messages detected ({} > {}) — searching for subject: {}", currentCount, messageCount, subjectText);
 
-            if (messageId.isPresent()) {
-                log.info("Found message on attempt {}: {}", i + 1, messageId.get());
-                return messageId.get();
+                List<GetMessagesRs> messages = getMessages(token);
+
+                Optional<String> messageId = messages.stream()
+                        .filter(m -> m.subject != null && m.subject.toLowerCase().contains(subjectText.toLowerCase()))
+                        .max(Comparator.comparing(m -> Instant.parse(m.updatedAt)))
+                        .map(m -> m.id);
+
+                if (messageId.isPresent()) {
+                    log.info("Found message on attempt {}: {}", i + 1, messageId.get());
+                    return messageId.get();
+                } else {
+                    log.warn("New message(s) found, but none matched subject '{}'", subjectText);
+                }
+            } else {
+                log.debug("No new messages yet. Attempt {}/{}: current = {}, expected > {}", i + 1, maxAttempts, currentCount, messageCount);
             }
 
-            log.info("Message not found yet. Attempt {}/{}. Retrying in {} seconds...", i + 1, maxAttempts, delaySeconds);
             try {
                 Thread.sleep(delaySeconds * 1000L);
             } catch (InterruptedException e) {
@@ -91,7 +105,7 @@ public class TempMailService {
             }
         }
 
-        log.warn("Message not found after {} attempts", maxAttempts);
+        log.warn("No message with subject '{}' found after {} attempts", subjectText, maxAttempts);
         return null;
     }
 

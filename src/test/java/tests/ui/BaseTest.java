@@ -19,7 +19,6 @@ import steps.LoginStep;
 import utils.PropertyReader;
 import utils.TestListener;
 
-import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -50,13 +49,6 @@ public abstract class BaseTest {
     @Parameters({"browser"})
     @BeforeMethod(alwaysRun = true)
     public void setup(@Optional("chrome") String browser) {
-        String threadKey = Thread.currentThread().getName();
-        String now = Instant.now().minusSeconds(10).toString();
-
-        PropertyReader.setProperty("testStartTime_" + threadKey, now);
-        PropertyReader.saveProperties();
-        log.info("Saved testStartTime_{} = {}", threadKey, now);
-
         this.email = getProperty("email");
         this.mailboxPassword = getProperty("mailboxPassword");
         this.workspace = getProperty("workspace");
@@ -84,7 +76,7 @@ public abstract class BaseTest {
         Configuration.baseUrl = "https://passport.kaiten.ru";
         Configuration.timeout = 30000;
         Configuration.clickViaJs = true;
-        Configuration.browserSize = "1366x768";
+        Configuration.browserSize = null;
 
         registrationPage = new RegistrationPage();
         loginPage = new LoginPage();
@@ -122,6 +114,7 @@ public abstract class BaseTest {
         PropertyReader.setProperty("mailboxPassword", mailboxPassword);
         PropertyReader.setProperty("kaitenPassword", kaitenPassword);
         PropertyReader.setProperty("workspace", workspace);
+        PropertyReader.setProperty("messageCount", "0");
         PropertyReader.saveProperties();
     }
 
@@ -137,10 +130,10 @@ public abstract class BaseTest {
         options.addArguments("--disable-notifications");
         options.addArguments("--disable-popup-blocking");
         options.addArguments("--disable-infobars");
-        options.addArguments("--headless");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--disable-gpu");
+//        options.addArguments("--headless");
+//        options.addArguments("--no-sandbox");
+//        options.addArguments("--disable-dev-shm-usage");
+//        options.addArguments("--disable-gpu");
         options.addArguments("--start-maximized");
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.setExperimentalOption("excludeSwitches",
