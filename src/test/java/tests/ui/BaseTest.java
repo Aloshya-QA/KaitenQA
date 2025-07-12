@@ -116,6 +116,8 @@ public abstract class BaseTest {
         String kaitenPassword = DataGenerator.generatePassword();
         String workspace = DataGenerator.generateWorkspaceName();
 
+        log.info("Mailbox: {}", mailboxPassword);
+
         PropertyReader.setProperty("email", email + getFirstDomain());
         PropertyReader.setProperty("mailboxPassword", mailboxPassword);
         PropertyReader.setProperty("kaitenPassword", kaitenPassword);
