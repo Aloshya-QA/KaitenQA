@@ -53,7 +53,7 @@ public class DataGenerator {
                 faker.number().digits(5),
                 faker.internet().password(
                         8,
-                        11,
+                        15,
                         true,
                         true,
                         true

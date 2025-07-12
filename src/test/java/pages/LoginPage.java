@@ -4,7 +4,6 @@ import lombok.extern.log4j.Log4j2;
 import org.testng.Assert;
 
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
@@ -45,8 +44,8 @@ public class LoginPage {
     public LoginPage inputEmail(String email) {
         log.info("Inputting email: {}", email);
         $("#email_username").setValue(email).submit();
-        $(byText("PIN-код отправлен на вашу почту")).shouldBe(visible);
-        $(byText("PIN-код отправлен на вашу почту")).shouldNotBe(visible);
+        $("#notistack-snackbar").shouldBe(visible);
+        $("#notistack-snackbar").shouldNotBe(visible);
         return this;
     }
 

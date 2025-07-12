@@ -51,7 +51,7 @@ public abstract class BaseTest {
     @BeforeMethod(alwaysRun = true)
     public void setup(@Optional("chrome") String browser) {
         String threadKey = Thread.currentThread().getName();
-        String now = Instant.now().toString();
+        String now = Instant.now().minusSeconds(10).toString();
 
         PropertyReader.setProperty("testStartTime_" + threadKey, now);
         PropertyReader.saveProperties();
@@ -84,7 +84,7 @@ public abstract class BaseTest {
         Configuration.baseUrl = "https://passport.kaiten.ru";
         Configuration.timeout = 30000;
         Configuration.clickViaJs = true;
-        Configuration.browserSize = "1366x768";
+        Configuration.browserSize = null;
 
         registrationPage = new RegistrationPage();
         loginPage = new LoginPage();
@@ -130,14 +130,15 @@ public abstract class BaseTest {
         chromePrefs.put("credentials_enable_service", false);
         chromePrefs.put("profile.password_manager_enabled", false);
         options.setExperimentalOption("prefs", chromePrefs);
+        options.addArguments("--lang=en");
         options.addArguments("--incognito");
         options.addArguments("--disable-notifications");
         options.addArguments("--disable-popup-blocking");
         options.addArguments("--disable-infobars");
-        options.addArguments("--headless");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--disable-gpu");
+//        options.addArguments("--headless");
+//        options.addArguments("--no-sandbox");
+//        options.addArguments("--disable-dev-shm-usage");
+//        options.addArguments("--disable-gpu");
         options.addArguments("--start-maximized");
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.setExperimentalOption("excludeSwitches",

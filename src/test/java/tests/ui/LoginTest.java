@@ -35,7 +35,7 @@ public class LoginTest extends BaseTest {
     public void checkLoginWithWrongPassword() {
         loginStep.authWithPassword(email, workspace, data.getPassword());
         assertThat(loginPage.getErrorMessage())
-                .contains("Неверный логин или пароль");
+                .contains("Login or password not valid");
     }
 
     @Test(
@@ -49,7 +49,7 @@ public class LoginTest extends BaseTest {
                 .inputEmail(email)
                 .inputPin(data.getPin());
         assertThat(loginPage.getErrorMessage())
-                .contains("Неверный PIN-код");
+                .contains("PIN code is incorrect");
     }
 
     @Test(
@@ -59,7 +59,7 @@ public class LoginTest extends BaseTest {
     public void checkLoginWithWrongEmail() {
         loginStep.authWithPassword(data.getEmail(), workspace, kaitenPassword);
         assertThat(loginPage.getErrorMessage())
-                .contains("Неверный логин или пароль");
+                .contains("Login or password not valid");
     }
 
     @Test(
