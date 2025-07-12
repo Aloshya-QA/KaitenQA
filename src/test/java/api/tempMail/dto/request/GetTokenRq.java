@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class TokenRq {
+public class GetTokenRq {
 
     @Expose
     public String address;

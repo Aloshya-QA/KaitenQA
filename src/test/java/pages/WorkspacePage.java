@@ -4,7 +4,6 @@ import lombok.extern.log4j.Log4j2;
 import org.testng.Assert;
 
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
 @Log4j2
@@ -18,11 +17,12 @@ public class WorkspacePage {
             log.error(e.getMessage());
             Assert.fail("WorkspacePage isn't opened");
         }
+
         return this;
     }
 
     public boolean isWorkspaceOpened() {
-        log.warn("Check status WorkspacePage...");
+        log.warn("Checking the status of opening WorkspacePage...");
         try {
             $("[data-testid='app-bar-profile-avatar']").shouldBe(visible);
             log.warn("Is WorkspacePage: True");
@@ -35,6 +35,7 @@ public class WorkspacePage {
     }
 
     public LoginPage logout() {
+        log.info("Logout...");
         $("[data-testid='app-bar-profile-avatar']").click();
         $("[data-testid='app-bar-profile-logout-button']").shouldBe(visible).click();
         return new LoginPage();

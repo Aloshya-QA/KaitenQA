@@ -1,22 +1,27 @@
-package api.tempMail.dto.response;
+package api.kaiten.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MessagesRs {
+public class GetCurrentUserDataRs {
 
     @SerializedName("id")
     @Expose
     public String id;
 
-    @SerializedName("subject")
+    @SerializedName("full_name")
     @Expose
-    public String subject;
+    public String fullName;
 
-    @SerializedName("createdAt")
+    @SerializedName("email")
     @Expose
-    public String createdAt;
+    public String email;
+
+    @SerializedName("username")
+    @Expose
+    public String username;
+
 
 }

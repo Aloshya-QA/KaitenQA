@@ -3,7 +3,9 @@ package tests.ui;
 import api.tempMail.TempMailService;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.logevents.SelenideLogger;
+import factory.DataFactory;
 import factory.DataGenerator;
+import initialization.InitSteps;
 import io.qameta.allure.selenide.AllureSelenide;
 import lombok.extern.log4j.Log4j2;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -17,14 +19,17 @@ import steps.LoginStep;
 import utils.PropertyReader;
 import utils.TestListener;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 
+import static api.tempMail.TempMailService.getFirstDomain;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+import static utils.PropertyReader.getProperty;
 
 @Log4j2
 @Listeners(TestListener.class)
-public class BaseTest {
+public abstract class BaseTest {
 
     RegistrationPage registrationPage;
     LoginPage loginPage;
@@ -33,15 +38,37 @@ public class BaseTest {
     LoginStep loginStep;
 
     String email;
-    String password;
+    String mailboxPassword;
     String workspace;
+    String mailboxApiToken;
+    String kaitenApiToken;
+    String kaitenPassword;
 
     TempMailService tempMail;
+    DataFactory data;
 
     @Parameters({"browser"})
     @BeforeMethod(alwaysRun = true)
     public void setup(@Optional("chrome") String browser) {
-        SelenideLogger.addListener("AllureSelenide",new AllureSelenide());
+        String threadKey = Thread.currentThread().getName();
+        String now = Instant.now().toString();
+
+        PropertyReader.setProperty("testStartTime_" + threadKey, now);
+        PropertyReader.saveProperties();
+        log.info("Saved testStartTime_{} = {}", threadKey, now);
+
+        this.email = getProperty("email");
+        this.mailboxPassword = getProperty("mailboxPassword");
+        this.workspace = getProperty("workspace");
+        this.mailboxApiToken = getProperty("mailboxApiToken");
+        this.kaitenApiToken = getProperty("kaitenApiToken");
+        this.kaitenPassword = getProperty("kaitenPassword");
+        this.tempMail = new TempMailService();
+        this.data = DataGenerator.dataFactory();
+
+        SelenideLogger.addListener("AllureSelenide", new AllureSelenide()
+                .screenshots(true)
+                .savePageSource(false));
 
         if (browser.equalsIgnoreCase("chrome")) {
             log.info("Starting Chrome browser");
@@ -67,30 +94,33 @@ public class BaseTest {
     }
 
     @BeforeSuite(alwaysRun = true)
-    public void generateDataOnce() {
-        generateData();
-        this.email = PropertyReader.getProperty("email");
-        this.password = PropertyReader.getProperty("password");
-        this.workspace = PropertyReader.getProperty("workspace");
-        this.tempMail = new TempMailService(email, password);
+    public void globalInit() throws InterruptedException {
+        if (getProperty("kaitenApiToken") == null) {
+            generateData();
+            setup("chrome");
+            InitSteps.createMailBox(tempMail);
+            InitSteps.createMailApiToken(tempMail);
+            InitSteps.registerAndActivate(email, workspace, tempMail);
+            InitSteps.createKaitenApiToken(email, workspace, tempMail);
+            InitSteps.setAccountPassword(getProperty("kaitenApiToken"), workspace, kaitenPassword);
+            getWebDriver().quit();
+        }
+        log.info("Skip Generation Data");
     }
 
     private void generateData() {
-        log.warn("Generate Test Data");
-        if (PropertyReader.getProperty("email") != null) {
-            log.info("Skip generation");
-            return;
-        }
+        log.warn("Generating Test Data...");
 
         String email = DataGenerator.generateEmailLogin();
-        String password = DataGenerator.generatePassword();
+        String mailboxPassword = DataGenerator.generatePassword();
+        String kaitenPassword = DataGenerator.generatePassword();
         String workspace = DataGenerator.generateWorkspaceName();
 
-        PropertyReader.setProperty("email", email + "@punkproof.com");
-        PropertyReader.setProperty("password", password);
+        PropertyReader.setProperty("email", email + getFirstDomain());
+        PropertyReader.setProperty("mailboxPassword", mailboxPassword);
+        PropertyReader.setProperty("kaitenPassword", kaitenPassword);
         PropertyReader.setProperty("workspace", workspace);
         PropertyReader.saveProperties();
-
     }
 
     private static ChromeOptions getChromeOptions() {
@@ -133,6 +163,7 @@ public class BaseTest {
     public void TearDawn() {
         if (getWebDriver() != null) {
 //            PropertyReader.clearProperties();
+//            Thread.sleep(10000);
             log.info("Closing browser");
             getWebDriver().quit();
         }

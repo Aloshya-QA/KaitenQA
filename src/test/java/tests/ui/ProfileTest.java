@@ -3,7 +3,6 @@ package tests.ui;
 import lombok.extern.log4j.Log4j2;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.Test;
-import utils.PropertyReader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,29 +10,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ProfileTest extends BaseTest{
 
     @Test(
-            testName = "Создание API токена",
-            groups = {"Initialization"}
+            testName = "Checking switching theme",
+            groups = {"Regression"}
     )
-    public void getKaitenApiToken() {
-        if (PropertyReader.getProperty("apiToken") != null) {
-            log.warn("Skip getting apiToken. Api Token already exists");
-            assertThat(PropertyReader.getProperty("apiToken")).isNotEmpty();
-            return;
-        }
-        loginStep.authWithPin(email, workspace, tempMail.getPinCode());
-        profilePage
-                .openPage(workspace)
-                .isOpened()
-                .createApiToken();
-
-        assertThat(profilePage.isApiTokenCreated()).isFalse();
-        log.info("API Token is saved in a config.properties: " + PropertyReader.getProperty("apiToken"));
-    }
-
-    @Test
     public void checkSwitchTheme() {
         SoftAssertions softAssert = new SoftAssertions();
-        loginStep.authWithPassword(email, workspace, password);
+        loginStep.authWithPassword(email, workspace, kaitenPassword);
+        workspacePage.isOpened();
         profilePage
                 .openPage(workspace)
                 .isOpened()
@@ -45,19 +28,27 @@ public class ProfileTest extends BaseTest{
 
     }
 
-    @Test
+    @Test(
+            testName = "Checking changing username",
+            groups = {"Regression"}
+    )
     public void checkChangeUserName() {
-        loginStep.authWithPassword(email, workspace, password);
+        loginStep.authWithPassword(email, workspace, kaitenPassword);
+        workspacePage.isOpened();
         profilePage
                 .openPage(workspace)
                 .isOpened()
-                .changeUserName("Nike111211");
-        assertThat(profilePage.changeNameSuccessful("Nike111211")).isTrue();
+                .changeUserName(data.getUsername());
+        assertThat(profilePage.changeNameSuccessful(data.getUsername())).isTrue();
     }
 
-    @Test
+    @Test(
+            testName = "Checking changing avatar",
+            groups = {"Regression"}
+    )
     public void checkChangeAvatar() {
-        loginStep.authWithPassword(email, workspace, password);
+        loginStep.authWithPassword(email, workspace, kaitenPassword);
+        workspacePage.isOpened();
         profilePage
                 .openPage(workspace)
                 .isOpened()
@@ -65,13 +56,17 @@ public class ProfileTest extends BaseTest{
         assertThat(profilePage.changeAvatarSuccessful()).isTrue();
     }
 
-    @Test
+    @Test(
+            testName = "Checking changing password",
+            groups = {"Regression"}
+    )
     public void checkChangeAccountPassword() {
-        loginStep.authWithPassword(email, workspace, password);
+        loginStep.authWithPassword(email, workspace, kaitenPassword);
+        workspacePage.isOpened();
         profilePage
                 .openPage(workspace)
                 .isOpened()
-                .changeAccountPassword(password, "123Qwe12)))");
+                .changeAccountPassword(kaitenPassword, data.getPassword());
         assertThat(profilePage.changeAccountPasswordSuccessful()).isTrue();
     }
 }

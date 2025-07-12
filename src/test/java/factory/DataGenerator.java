@@ -13,7 +13,8 @@ public class DataGenerator {
     public static String generateEmailLogin() {
         String base = faker.name().username().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
         String digits = faker.number().digits(4);
-        return base + digits;
+
+        return base + digits + "@";
     }
 
     public static String generatePassword() {
@@ -32,7 +33,7 @@ public class DataGenerator {
         return chars.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining())
-                .substring(0, 10); // максимум 10 символов
+                .substring(0, 10);
     }
 
     public static String generateWorkspaceName() {
@@ -42,10 +43,22 @@ public class DataGenerator {
         if (workspaceName.length() > 28) {
             workspaceName = workspaceName.substring(0, 28);
         }
+
         return workspaceName;
     }
 
-    public static String generateSubdomain(String companyName) {
-        return companyName + ".kaiten.ru";
+    public static DataFactory dataFactory() {
+        return new DataFactory(
+                faker.internet().emailAddress(),
+                faker.number().digits(5),
+                faker.internet().password(
+                        8,
+                        11,
+                        true,
+                        true,
+                        true
+                ),
+                faker.name().firstName().concat(faker.number().digits(3))
+        );
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite thread-count="2" name="SauceDemo Smoke Test" parallel="classes">
+<suite thread-count="2" name="KaitenQA Smoke Test" parallel="methods">
     <listeners>
         <listener class-name="utils.TestListener"/>
         <listener class-name="utils.AnnotationTransformer"/>
@@ -8,23 +8,14 @@
     <test name="Chrome">
         <groups>
             <run>
-                <include name="Smoke"/>
+                <include name="Pin"/>
+                <include name="Second"/>
             </run>
         </groups>
         <classes>
-            <class name="tests.ui.ProjectTest"/>
+            <class name="tests.ui.LoginTest"/>
+            <class name="tests.ui.ProfileTest"/>
             <parameter name="browser" value="chrome"/>
         </classes>
-    </test> <!-- Test -->
-    <test name="FireFox">
-        <groups>
-            <run>
-                <include name="Smoke"/>
-            </run>
-        </groups>
-        <classes>
-            <class name="tests.ui.ProjectTest"/>
-            <parameter name="browser" value="firefox"/>
-        </classes>
-    </test> <!-- Test -->
+    </test>
 </suite>
