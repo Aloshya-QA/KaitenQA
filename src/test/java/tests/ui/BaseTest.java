@@ -82,7 +82,7 @@ public abstract class BaseTest {
         }
 
         Configuration.baseUrl = "https://passport.kaiten.ru";
-        Configuration.timeout = 15000;
+        Configuration.timeout = 30000;
         Configuration.clickViaJs = true;
         Configuration.browserSize = "1366x768";
 
@@ -94,7 +94,7 @@ public abstract class BaseTest {
     }
 
     @BeforeSuite(alwaysRun = true)
-    public void globalInit() throws InterruptedException {
+    public void globalInit() {
         if (getProperty("kaitenApiToken") == null) {
             generateData();
             setup("chrome");

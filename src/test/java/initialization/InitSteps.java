@@ -29,14 +29,12 @@ public final class InitSteps {
         log.info("Mailbox API token saved in config.properties");
     }
 
-    public static void registerAndActivate(String email, String workspace, TempMailService mail) throws InterruptedException {
+    public static void registerAndActivate(String email, String workspace, TempMailService mail) {
         new RegistrationPage()
                 .openPage()
                 .isOpened()
                 .registerAccount(email, workspace)
                 .isRegistrationComplete();
-
-        Thread.sleep(10000);
 
         new RegistrationPage()
                 .activateCompany(mail.getActivateCompanyUrl());
