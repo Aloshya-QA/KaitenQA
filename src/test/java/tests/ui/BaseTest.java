@@ -101,7 +101,7 @@ public abstract class BaseTest {
             InitSteps.createMailBox(tempMail);
             InitSteps.createMailApiToken(tempMail);
             InitSteps.registerAndActivate(email, workspace, tempMail);
-            InitSteps.createKaitenApiToken(email, workspace, tempMail);
+            InitSteps.createKaitenApiToken(workspace);
             InitSteps.setAccountPassword(getProperty("kaitenApiToken"), workspace, kaitenPassword);
             getWebDriver().quit();
         }
