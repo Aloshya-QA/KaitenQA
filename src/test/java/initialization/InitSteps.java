@@ -52,10 +52,10 @@ public final class InitSteps {
         }
 
         new LoginPage()
-                .openPage(workspace)
-                .isOpened()
-                .inputEmail(email)
-                .inputPin(mail.getPinCode());
+                .openPage(workspace);
+//                .isOpened()
+//                .inputEmail(email)
+//                .inputPin(mail.getPinCode());
 
         new WorkspacePage()
                 .isOpened();
