@@ -39,7 +39,7 @@ public final class InitSteps {
         new RegistrationPage()
                 .activateCompany(mail.getActivateCompanyUrl());
 
-        if (!new RegistrationPage().activateCompanySuccessful()) {
+        if (!new WorkspacePage().isWorkspaceOpened()) {
             throw new IllegalStateException("Account activation failed");
         }
         log.info("Account registered & activated: {}", email);
