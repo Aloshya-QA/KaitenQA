@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite thread-count="4" name="KaitenQA Regression Test" parallel="methods">
+<suite thread-count="1" name="KaitenQA Regression Test" parallel="tests">
     <listeners>
         <listener class-name="utils.TestListener"/>
         <listener class-name="utils.AnnotationTransformer"/>
