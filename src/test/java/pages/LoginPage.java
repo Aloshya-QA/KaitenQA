@@ -4,9 +4,12 @@ import api.tempMail.TempMailService;
 import lombok.extern.log4j.Log4j2;
 import org.testng.Assert;
 
+import java.time.Instant;
+
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
+import static utils.PropertyReader.*;
 
 @Log4j2
 public class LoginPage {
@@ -43,7 +46,6 @@ public class LoginPage {
     }
 
     public LoginPage inputEmail(String email) {
-        new TempMailService().getMessageCount();
         log.info("Inputting email: {}", email);
         $("#email_username").setValue(email).submit();
         $("#notistack-snackbar").shouldBe(visible);
@@ -68,6 +70,20 @@ public class LoginPage {
 
     public String getErrorMessage() {
         log.info("Getting error message...");
+        if ($("#notistack-snackbar").shouldBe(visible).getText().contains("PIN code is incorrect")) {
+            saveUnusedPin();
+            return "PIN code is incorrect";
+        }
         return $("#notistack-snackbar").shouldBe(visible).getText();
+    }
+
+    private void saveUnusedPin() {
+        TempMailService mailbox = new TempMailService();
+        String pin = mailbox.getPin();
+        String receivedAt = Instant.now().toString();
+        setProperty("unusedPin", pin);
+        setProperty("unusedPinReceivedAt", receivedAt);
+        saveProperties();
+        log.info("Saved unused pin: {}, received at: {}", pin, receivedAt);
     }
 }

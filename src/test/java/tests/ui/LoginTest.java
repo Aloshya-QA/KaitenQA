@@ -15,7 +15,7 @@ public class LoginTest extends BaseTest {
                 .openPage(workspace)
                 .isOpened()
                 .inputEmail(email)
-                .inputPin(tempMail.getPinCode());
+                .inputPin(tempMail.getPin());
         assertThat(workspacePage.isWorkspaceOpened()).isTrue();
     }
 

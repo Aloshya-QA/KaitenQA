@@ -74,7 +74,7 @@ public abstract class BaseTest {
         }
 
         Configuration.baseUrl = "https://passport.kaiten.ru";
-        Configuration.timeout = 30000;
+        Configuration.timeout = 10000;
         Configuration.clickViaJs = true;
         Configuration.browserSize = "1366x768";
 
@@ -114,7 +114,6 @@ public abstract class BaseTest {
         PropertyReader.setProperty("mailboxPassword", mailboxPassword);
         PropertyReader.setProperty("kaitenPassword", kaitenPassword);
         PropertyReader.setProperty("workspace", workspace);
-        PropertyReader.setProperty("messageCount", "0");
         PropertyReader.saveProperties();
     }
 

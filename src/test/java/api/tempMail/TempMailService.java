@@ -6,6 +6,7 @@ import api.tempMail.dto.response.GetDomainsRs;
 import api.tempMail.dto.response.GetMessagesRs;
 import lombok.extern.log4j.Log4j2;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -49,72 +50,32 @@ public class TempMailService {
         return getAuthToken(rq).token;
     }
 
-    public int getMessageCount() {
-        String token = getProperty("mailboxApiToken");
-        List<GetMessagesRs> messages = getMessages(token);
-        int count = messages.size();
-
-        if (count == 0) {
-            setProperty("messageCount", "0");
-        } else {
-            setProperty("messageCount", String.valueOf(count));
-        }
-        saveProperties();
-
-        log.info("Total messages in mailbox: {}", count);
-        return count;
-    }
-
     public String getMessageId(String subjectText) {
         String token = getProperty("mailboxApiToken");
 
-        int messageCount = Integer.parseInt(getProperty("messageCount"));
-        log.info("Message count {}", messageCount);
+        List<GetMessagesRs> messages = getMessages(token);
 
-        int maxAttempts = 10;
-        int delaySeconds = 2;
+        Optional<String> messageId = messages.stream()
+                .filter(m -> m.subject != null && m.subject.toLowerCase().contains(subjectText.toLowerCase()))
+                .max(Comparator.comparing(m -> Instant.parse(m.updatedAt))) // самое новое
+                .map(m -> m.id);
 
-        for (int i = 0; i < maxAttempts; i++) {
-            int currentCount = getMessageCount();
-
-            if (currentCount > messageCount) {
-                log.info("New messages detected ({} > {}) — searching for subject: {}", currentCount, messageCount, subjectText);
-
-                List<GetMessagesRs> messages = getMessages(token);
-
-                Optional<String> messageId = messages.stream()
-                        .filter(m -> m.subject != null && m.subject.toLowerCase().contains(subjectText.toLowerCase()))
-                        .max(Comparator.comparing(m -> Instant.parse(m.updatedAt)))
-                        .map(m -> m.id);
-
-                if (messageId.isPresent()) {
-                    log.info("Found message on attempt {}: {}", i + 1, messageId.get());
-                    return messageId.get();
-                } else {
-                    log.warn("New message(s) found, but none matched subject '{}'", subjectText);
-                }
-            } else {
-                log.debug("No new messages yet. Attempt {}/{}: current = {}, expected > {}", i + 1, maxAttempts, currentCount, messageCount);
-            }
-
-            try {
-                Thread.sleep(delaySeconds * 1000L);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
+        if (messageId.isPresent()) {
+            log.info("Found latest message with subject '{}': {}", subjectText, messageId.get());
+            return messageId.get();
+        } else {
+            log.warn("No message found with subject: {}", subjectText);
+            return null;
         }
-
-        log.warn("No message with subject '{}' found after {} attempts", subjectText, maxAttempts);
-        return null;
     }
 
-    public String getTextLatestMessageBySubject(String subject) {
+
+    public String getTextMessageBySubject(String subject) {
         return getTextMessage(getMessageId(subject), getProperty("mailboxApiToken")).text;
     }
 
     public String getActivateCompanyUrl() {
-        String messageText = getTextLatestMessageBySubject("Активация компании");
+        String messageText = getTextMessageBySubject("Активация компании");
 
         String startWithText = "активировать компанию";
         String endWithText = "Если вы не регистрировали";
@@ -124,8 +85,45 @@ public class TempMailService {
         return messageText.substring(startIndex + startWithText.length() + 2, endIndex - 3);
     }
 
-    public String getPinCode() {
-        String messageText = getTextMessage(getMessageId(PIN_CODE_SUBJECT), getProperty("mailboxApiToken")).text;
+    public String getPin() {
+        String unusedPin = getProperty("unusedPin");
+        String unusedPinReceivedAt = getProperty("unusedPinReceivedAt");
+        String usedPin = getProperty("usedPin");
+
+        if (unusedPin != null && unusedPinReceivedAt != null) {
+            Instant receivedAt = Instant.parse(unusedPinReceivedAt);
+            Duration duration = Duration.between(receivedAt, Instant.now());
+
+            if (duration.toMinutes() < 5) {
+                log.info("Using previously saved unused PIN: {}", unusedPin);
+                setProperty("usedPin", unusedPin);
+                removeProperty("unusedPin");
+                removeProperty("unusedPinReceivedAt");
+                saveProperties();
+                return unusedPin;
+            } else {
+                log.info("Saved unused PIN expired");
+            }
+        }
+
+        String latestPin = extractPin();
+
+        if (usedPin != null && usedPin.equals(latestPin)) {
+            log.info("Latest PIN from email equals used PIN, waiting for new PIN...");
+            latestPin = waitForNewPin(usedPin);
+        }
+
+        setProperty("usedPin", latestPin);
+        saveProperties();
+
+        return latestPin;
+    }
+
+    public String extractPin() {
+        String token = getProperty("mailboxApiToken");
+        String messageId = getMessageId(PIN_CODE_SUBJECT);
+
+        String messageText = getTextMessage(messageId, token).text;
 
         String startWithText = "PIN-код";
         String endWithText = "Скопируйте";
@@ -133,5 +131,30 @@ public class TempMailService {
         int endIndex = messageText.indexOf(endWithText);
 
         return messageText.substring(startIndex + startWithText.length() + 2, endIndex - 2);
+    }
+
+    private String waitForNewPin(String usedPin) {
+        int attempts = 10;
+        int delaySeconds = 5;
+
+        for (int i = 0; i < attempts; i++) {
+            String newPin = extractPin();
+
+            if (newPin != null && !newPin.equals(usedPin)) {
+                log.info("Received new PIN: {}", newPin);
+                return newPin;
+            }
+
+            log.info("Waiting for new PIN... attempt {}/{}", i + 1, attempts);
+            try {
+                Thread.sleep(delaySeconds * 1000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+
+        log.warn("Timed out waiting for new PIN, returning used PIN: {}", usedPin);
+        return usedPin;
     }
 }
