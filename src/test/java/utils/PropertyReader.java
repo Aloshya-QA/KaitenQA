@@ -19,7 +19,6 @@ public final class PropertyReader {
             e.printStackTrace();
         }
 
-        // Дополнительные вложенные конфиги (если нужно)
         if (properties.getProperty("config_file") != null) {
             Properties additional = getProperties(properties.getProperty("config_file"));
             properties.putAll(additional);
@@ -50,6 +49,11 @@ public final class PropertyReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void removeProperty(String key) {
+        if (properties == null) readProperties();
+        properties.remove(key);
     }
 
     public static void clearProperties() {

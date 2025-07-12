@@ -6,71 +6,70 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class LoginTest extends BaseTest {
 
-    String wrongPassword = "123qwe12";
-    String wrongPin = "1111";
-    String wrongEmail = "asdasdad@mail.ru";
-
     @Test(
-            testName = "Регистрация аккаунта",
-            groups = {"Initialization"}
+            testName = "Successful login with pin",
+            groups = {"Smoke", "Regression", "Pin"}
     )
-    public void accountRegistration() throws InterruptedException {
-        tempMail.createMail();
-        registrationPage
-                .openPage()
-                .isOpened()
-                .registerAccount(email, workspace)
-                .isRegistrationComplete();
-        assertThat(tempMail.getEmailSubjects().contains("Активация компании")).isTrue();
-    }
-
-    @Test(
-            testName = "Активация аккаунта",
-            groups = {"Initialization"}
-    )
-    public void activateAccount() {
-        registrationPage
-                .activateCompany(tempMail.getActivateCompanyUrl());
-        assertThat(registrationPage.activateCompanySuccessful()).isTrue();
-    }
-
-    @Test
     public void checkSuccessLoginWithPin() {
-        loginStep.authWithPassword(email, workspace, tempMail.getPinCode());
+        loginPage
+                .openPage(workspace)
+                .isOpened()
+                .inputEmail(email)
+                .inputPin(tempMail.getPin());
         assertThat(workspacePage.isWorkspaceOpened()).isTrue();
     }
 
-    @Test
+    @Test(
+            testName = "Successful login with password",
+            groups = {"Regression", "Second"}
+    )
     public void checkSuccessLoginWithPassword() {
-        loginStep.authWithPassword(email, workspace, password);
+        loginStep.authWithPassword(email, workspace, kaitenPassword);
         assertThat(workspacePage.isWorkspaceOpened()).isTrue();
     }
 
-    @Test
+    @Test(
+            testName = "Checking login with wrong password",
+            groups = {"Regression"}
+    )
     public void checkLoginWithWrongPassword() {
-        loginStep.authWithPassword(email, workspace, wrongPassword);
+        loginStep.authWithPassword(email, workspace, data.getPassword());
         assertThat(loginPage.getErrorMessage())
-                .contains("Неверный логин или пароль");
+                .contains("Login or password not valid");
     }
 
-    @Test
+    @Test(
+            testName = "Checking login with wrong pin",
+            groups = {"Regression"}
+    )
     public void checkLoginWithWrongPin() {
-        loginStep.authWithPin(email, workspace, wrongPin);
+        loginPage
+                .openPage(workspace)
+                .isOpened()
+                .inputEmail(email)
+                .inputPin(data.getPin());
         assertThat(loginPage.getErrorMessage())
-                .contains("Неверный PIN-код");
+                .contains("PIN code is incorrect");
     }
 
-    @Test
+    @Test(
+            testName = "Checking login with wrong email",
+            groups = {"Regression"}
+    )
     public void checkLoginWithWrongEmail() {
-        loginStep.authWithPassword(wrongEmail, workspace, password);
+        loginStep.authWithPassword(data.getEmail(), workspace, kaitenPassword);
         assertThat(loginPage.getErrorMessage())
-                .contains("Неверный логин или пароль");
+                .contains("Login or password not valid");
     }
 
-    @Test
+    @Test(
+            testName = "Checking logout",
+            groups = {"Regression"}
+    )
     public void checkLogout() {
-        loginStep.authWithPassword(email, workspace, password);
+        loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage
+                .isOpened()
                 .logout();
         assertThat(loginPage.logoutSuccessful()).isTrue();
     }
