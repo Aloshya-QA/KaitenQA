@@ -4,7 +4,6 @@ import api.kaiten.KaitenService;
 import api.kaiten.dto.request.CreatePasswordRq;
 import api.tempMail.TempMailService;
 import lombok.extern.log4j.Log4j2;
-import pages.LoginPage;
 import pages.ProfilePage;
 import pages.RegistrationPage;
 import pages.WorkspacePage;
@@ -45,17 +44,11 @@ public final class InitSteps {
         log.info("Account registered & activated: {}", email);
     }
 
-    public static void createKaitenApiToken(String email, String workspace, TempMailService mail) {
+    public static void createKaitenApiToken(String workspace) {
         if (getProperty("kaitenApiToken") != null) {
             log.warn("Kaiten API token already exists");
             return;
         }
-
-        new LoginPage()
-                .openPage(workspace);
-//                .isOpened()
-//                .inputEmail(email)
-//                .inputPin(mail.getPinCode());
 
         new WorkspacePage()
                 .isOpened();

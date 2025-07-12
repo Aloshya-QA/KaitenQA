@@ -46,7 +46,6 @@ public class RegistrationPage {
 
         registerAccountStepOne();
         registerAccountStepTwo();
-//        registerAccountStepThree();
 
         return this;
     }
@@ -66,16 +65,6 @@ public class RegistrationPage {
         $(byText("ПРОПУСТИТЬ")).click();
     }
 
-    private void registerAccountStepThree() {
-        log.info("Registration step three");
-        $("div[role='progressbar']").shouldBe(visible);
-        $("div[role='progressbar']").shouldNotBe(visible);
-        $("button[title='Clear']").hover().click();
-        $("input[type='text']").setValue("Польша").sendKeys(Keys.ENTER);
-        $(byText("Далее")).shouldBe(visible);
-        $(byText("Далее")).click();
-    }
-
     public RegistrationPage isRegistrationComplete() {
         log.info("Checking registration status...");
         try {
@@ -92,6 +81,7 @@ public class RegistrationPage {
     public RegistrationPage activateCompany(String url) {
         log.info("Activating company...");
         open(url);
+        $(byText("Go to company")).shouldBe(visible).click();
         return this;
     }
 
