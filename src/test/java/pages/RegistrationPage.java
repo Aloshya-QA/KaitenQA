@@ -97,7 +97,7 @@ public class RegistrationPage {
 
     public boolean activateCompanySuccessful() {
         try {
-            $(byText("Перейти в компанию")).shouldBe(visible);
+            $(byText("Открыт полный доступ на 14 дней \uD83E\uDD29")).shouldBe(visible);
             log.info("Activate company successful");
         } catch (Exception e) {
             log.error(e.getMessage());
