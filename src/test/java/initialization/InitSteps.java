@@ -22,10 +22,12 @@ public final class InitSteps {
         PropertyReader.setProperty("mailboxApiToken", mail.getToken());
         PropertyReader.saveProperties();
 
+        log.info("Mailbox token: {}", getProperty("mailboxApiToken"));
+
         if (PropertyReader.getProperty("mailboxApiToken").isEmpty()) {
             throw new IllegalStateException("Mailbox API token was NOT saved");
         }
-        log.info("Mailbox API token saved in config.properties");
+        log.info("Mailbox API token saved");
     }
 
     public static void registerAndActivate(String email, String workspace, TempMailService mail) {
