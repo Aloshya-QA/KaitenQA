@@ -1,11 +1,11 @@
-package api.tempMail.dto.response;
+package api.kaiten.dto.response;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class GetTextMessageRs {
+public class AddCardChecklistItemRs {
 
-    @SerializedName("text")
     @Expose
+    @SerializedName("text")
     public String text;
 }

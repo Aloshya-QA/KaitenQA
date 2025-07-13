@@ -4,20 +4,32 @@ import api.tempMail.dto.request.GetTokenRq;
 import api.tempMail.dto.response.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import api.tempMail.dto.request.CreateMailRq;
-
-import java.util.List;
+import io.restassured.mapper.ObjectMapperType;
+import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;
+import static java.lang.String.format;
 
 public class TempMailClient {
 
     static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    static RestAssuredConfig gsonRs = RestAssuredConfig.config().objectMapperConfig(
+            ObjectMapperConfig.objectMapperConfig()
+                    .defaultObjectMapperType(ObjectMapperType.GSON)
+    );
+
+    private static RequestSpecification baseRequest() {
+        return given()
+                .config(gsonRs)
+                .contentType(ContentType.JSON);
+    }
 
     public static GetDomainsRs getDomains() {
-        return given()
-                .contentType(ContentType.JSON)
+        return baseRequest()
                 .when()
                 .get("https://api.mail.tm/domains")
                 .then()
@@ -28,8 +40,7 @@ public class TempMailClient {
     }
 
     public static CreateMailRs createTempMail(CreateMailRq rq) {
-        return given()
-                .contentType(ContentType.JSON)
+        return baseRequest()
                 .body(gson.toJson(rq))
                 .when()
                 .post("https://api.mail.tm/accounts")
@@ -41,8 +52,7 @@ public class TempMailClient {
     }
 
     public static GetTokenRs getAuthToken(GetTokenRq rq) {
-        return given()
-                .contentType(ContentType.JSON)
+        return baseRequest()
                 .body(gson.toJson(rq))
                 .when()
                 .post("https://api.mail.tm/token")
@@ -53,24 +63,22 @@ public class TempMailClient {
                 .as(GetTokenRs.class);
     }
 
-    public static List<GetMessagesRs> getMessages(String token) {
-        return given()
-                .header("Authorization", "Bearer " + token)
-                .accept(ContentType.JSON)
+    public static GetMessagesRs getMessages(String token) {
+        return baseRequest()
+                .header("Authorization", format("Bearer %s", token))
                 .when()
                 .get("https://api.mail.tm/messages")
                 .then()
                 .log().status()
                 .statusCode(200)
                 .extract()
-                .jsonPath()
-                .getList(".", GetMessagesRs.class);
+                .as(GetMessagesRs.class);
     }
 
     public static GetTextMessageRs getTextMessage(String messageId, String token) {
-        return given()
-                .header("Authorization", "Bearer " + token)
+        return baseRequest()
                 .accept(ContentType.JSON)
+                .header("Authorization", format("Bearer %s", token))
                 .when()
                 .get("https://api.mail.tm/messages/" + messageId)
                 .then()

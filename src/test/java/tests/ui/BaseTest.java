@@ -6,7 +6,9 @@ import com.codeborne.selenide.logevents.SelenideLogger;
 import factory.DataFactory;
 import factory.DataGenerator;
 import initialization.InitSteps;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.qameta.allure.selenide.AllureSelenide;
+import io.restassured.RestAssured;
 import lombok.extern.log4j.Log4j2;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
@@ -16,7 +18,6 @@ import pages.ProfilePage;
 import pages.RegistrationPage;
 import pages.WorkspacePage;
 import steps.LoginStep;
-import utils.PropertyReader;
 import utils.TestListener;
 
 import java.util.Collections;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 
 import static api.tempMail.TempMailService.getFirstDomain;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-import static utils.PropertyReader.getProperty;
+import static utils.PropertyReader.*;
 
 @Log4j2
 @Listeners(TestListener.class)
@@ -58,6 +59,7 @@ public abstract class BaseTest {
         this.tempMail = new TempMailService();
         this.data = DataGenerator.dataFactory();
 
+        RestAssured.filters(new AllureRestAssured());
         SelenideLogger.addListener("AllureSelenide", new AllureSelenide()
                 .screenshots(true)
                 .savePageSource(false));
@@ -88,37 +90,46 @@ public abstract class BaseTest {
     @BeforeSuite(alwaysRun = true)
     public void globalInit() {
         if (getProperty("kaitenApiToken") == null) {
+            log.info("Start global initialization...");
+            log.warn("Generating Test Data...");
             generateData();
             setup("chrome");
+            log.info("Start creating mailbox...");
             InitSteps.createMailBox(tempMail);
+            log.info("Start receiving mailbox API token...");
             InitSteps.createMailApiToken(tempMail);
+            log.info("Start registering & activating Kaiten account...");
             InitSteps.registerAndActivate(email, workspace, tempMail);
+            log.info("Start creating Kaiten API token...");
             InitSteps.createKaitenApiToken(workspace);
+            log.info("Start creating Kaiten account password");
             InitSteps.setAccountPassword(getProperty("kaitenApiToken"), workspace, kaitenPassword);
-            getWebDriver().quit();
+            if (getWebDriver() != null) {
+                log.info("Global initialization complete");
+                getWebDriver().quit();
+            }
         }
-        log.info("Skip Generation Data");
+        log.info("Skip global initialization");
     }
 
     private void generateData() {
-        log.warn("Generating Test Data...");
+        String
+                email = DataGenerator.generateEmailLogin(),
+                mailboxPassword = DataGenerator.generatePassword(),
+                kaitenPassword = DataGenerator.generatePassword(),
+                workspace = DataGenerator.generateWorkspaceName();
 
-        String email = DataGenerator.generateEmailLogin();
-        String mailboxPassword = DataGenerator.generatePassword();
-        String kaitenPassword = DataGenerator.generatePassword();
-        String workspace = DataGenerator.generateWorkspaceName();
+        setProperty("email", email + getFirstDomain());
+        setProperty("mailboxPassword", mailboxPassword);
+        setProperty("kaitenPassword", kaitenPassword);
+        setProperty("workspace", workspace);
+        saveProperties();
 
-        log.info("Mailbox: {}", mailboxPassword);
-
-        PropertyReader.setProperty("email", email + getFirstDomain());
-        PropertyReader.setProperty("mailboxPassword", mailboxPassword);
-        PropertyReader.setProperty("kaitenPassword", kaitenPassword);
-        PropertyReader.setProperty("workspace", workspace);
-        PropertyReader.saveProperties();
+        log.warn("Generating Test Data complete");
     }
 
     private static ChromeOptions getChromeOptions() {
-        log.info("Init Chrome options");
+        log.info("Chrome flags initialization");
         ChromeOptions options = new ChromeOptions();
         HashMap<String, Object> chromePrefs = new HashMap<>();
         chromePrefs.put("credentials_enable_service", false);
@@ -141,8 +152,9 @@ public abstract class BaseTest {
     }
 
     private static EdgeOptions getEdgeOptions() {
-        log.info("Init Edge options");
+        log.info("Edge flags initialization");
         EdgeOptions options = new EdgeOptions();
+        options.addArguments("--lang=en");
         options.addArguments("--start-maximized");
         options.addArguments("--headless");
         options.addArguments("--no-sandbox");
