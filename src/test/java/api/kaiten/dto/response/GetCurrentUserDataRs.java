@@ -22,6 +22,4 @@ public class GetCurrentUserDataRs {
     @SerializedName("username")
     @Expose
     public String username;
-
-
 }

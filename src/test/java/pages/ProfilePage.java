@@ -57,13 +57,13 @@ public class ProfilePage {
         return $("body").getCssValue("background-color").equals(backgroundColor);
     }
 
-    public void changeUserAvatar() {
+    public void changeUserAvatar(File file) {
         log.info("Changing avatar...");
         $(byText("Изменить")).click();
         log.info("Uploading avatar...");
         $(byText("Загрузить аватар")).shouldBe(visible).click();
         $(byText("Перетащите изображение сюда")).shouldBe(visible);
-        $("input[type='file']").uploadFile(new File("src/test/resources/images/photo.jpg"));
+        $("input[type='file']").uploadFile(file);
         log.info("Saving avatar...");
         $(byText("Обрезать и сохранить")).shouldBe(visible).click();
     }

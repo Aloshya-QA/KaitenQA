@@ -5,7 +5,7 @@
         <listener class-name="utils.TestListener"/>
         <listener class-name="utils.AnnotationTransformer"/>
     </listeners>
-    <test name="Chrome">
+    <test name="Chrome UI Tests">
         <groups>
             <run>
                 <include name="Regression"/>
@@ -15,6 +15,11 @@
             <class name="tests.ui.LoginTest"/>
             <class name="tests.ui.ProfileTest"/>
             <parameter name="browser" value="chrome"/>
+        </classes>
+    </test>
+    <test name="API Tests">
+        <classes>
+            <class name="tests.api.KaitenApiTest"/>
         </classes>
     </test>
 </suite>

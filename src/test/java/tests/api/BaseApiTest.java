@@ -2,20 +2,19 @@ package tests.api;
 
 import api.kaiten.KaitenService;
 import org.testng.annotations.BeforeClass;
-import utils.PropertyReader;
+
+import static utils.PropertyReader.getProperty;
 
 public class BaseApiTest {
 
     String token;
     String workspace;
-    String password;
-    KaitenService kaitenService;
+    KaitenService kaiten;
 
     @BeforeClass
     public void loadProperties() {
-        token = PropertyReader.getProperty("apiToken");
-        workspace = PropertyReader.getProperty("workspace");
-        password = PropertyReader.getProperty("password");
-        kaitenService = new KaitenService();
+        this.token = getProperty("kaitenApiToken");
+        this.workspace = getProperty("workspace");
+        this.kaiten = new KaitenService();
     }
 }
