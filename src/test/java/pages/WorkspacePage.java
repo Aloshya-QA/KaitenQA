@@ -227,13 +227,14 @@ public class WorkspacePage {
     }
 
     @Step("Adding comment with file to card...")
-    public WorkspacePage addComment(String text, File file) {
+    public WorkspacePage addComment(String text, File file) throws InterruptedException {
         log.info("Adding comment with file to card...");
         $(COMMENT_INPUT).shouldBe(visible).setValue(text);
         $(COMMENT_ACTIONS_BAR).shouldBe(visible);
         $(COMMENT_FILE_INPUT).uploadFile(file);
         $(COMMENT_SAVE_BUTTON).shouldBe(clickable).click();
         $(byText("несколько секунд назад")).shouldBe(visible);
+        Thread.sleep(3000);
         return this;
     }
 
@@ -260,7 +261,7 @@ public class WorkspacePage {
     }
 
     @Step("Dragging card #{indexCard} to column #{targetColumn}...")
-    public WorkspacePage dragAndDropCardToColumn(int indexCard, int targetColumn) {
+    public WorkspacePage dragAndDropCardToColumn(int indexCard, int targetColumn) throws InterruptedException {
         log.info("Dragging card #{} to column #{}...", indexCard, targetColumn);
         $(CARD_LIST).shouldBe(visible);
         ElementsCollection cards = $$x(CARD_SELECT_LIST);
@@ -269,6 +270,7 @@ public class WorkspacePage {
         String targetCardName = card.find(byXpath(CARD_TITLE_FROM_LIST)).getText();
         cards.get(indexCard).dragAndDrop(DragAndDropOptions.to(targetColumnElement));
         targetColumnElement.find(byText(targetCardName)).shouldHave(visible);
+        Thread.sleep(3000);
         return this;
     }
 

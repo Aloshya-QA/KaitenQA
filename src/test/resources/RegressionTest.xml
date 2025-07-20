@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite thread-count="1" name="KaitenQA Regression Test" parallel="tests">
+<suite thread-count="1" name="KaitenQA Regression Test" parallel="false">
     <listeners>
         <listener class-name="utils.TestListener"/>
         <listener class-name="utils.AnnotationTransformer"/>
@@ -19,6 +19,11 @@
         </classes>
     </test>
     <test name="API Tests">
+        <groups>
+            <run>
+                <include name="Regression"/>
+            </run>
+        </groups>
         <classes>
             <class name="tests.api.KaitenApiTest"/>
         </classes>

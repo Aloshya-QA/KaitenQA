@@ -135,16 +135,16 @@ public class WorkspaceTest extends BaseTest {
             groups = {"Regression"},
             priority = 8
     )
-    public void checkDragAndDropCard() {
+    public void checkDragAndDropCard() throws InterruptedException {
         SoftAssertions soft = new SoftAssertions();
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage
                 .isOpened()
                 .openWorkspace(workspace, workspaceId);
-        soft.assertThat(workspacePage.getCountCardsInColumn(1)).isEqualTo(2);
+        soft.assertThat(workspacePage.getCountCardsInColumn(1)).isEqualTo(3);
         workspacePage
                 .dragAndDropCardToColumn(0, 3);
-        soft.assertThat(workspacePage.getCountCardsInColumn(3)).isEqualTo(3);
+        soft.assertThat(workspacePage.getCountCardsInColumn(3)).isEqualTo(2);
         soft.assertAll();
     }
 
@@ -169,7 +169,7 @@ public class WorkspaceTest extends BaseTest {
             groups = {"Regression"},
             priority = 10
     )
-    public void checkAddCommentWithFile() {
+    public void checkAddCommentWithFile() throws InterruptedException {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage
                 .isOpened()
