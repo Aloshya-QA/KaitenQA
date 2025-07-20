@@ -52,7 +52,6 @@ public class WorkspacePage {
             COMMENT_SAVE_BUTTON = "[data-testid='save-comment-button']",
             COMMENT_ACTIONS_BAR = "[data-testid='new-comment-editor-actions']",
             COMMENT_FILE_INPUT = "[data-test='comment-file-input']",
-            UPLOAD_NOTIFICATION = "[role='alert']",
             COMMENT_SELECT_LIST = "//div[@data-testid='card-comment-text']//p[text()='%s']",
             COMMENT_FILE_LINK = "div[data-test^='file-'] > a",
             CARD_COMMENT_LIST = "[data-testid='card-comment']",
@@ -233,7 +232,6 @@ public class WorkspacePage {
         $(COMMENT_INPUT).shouldBe(visible).setValue(text);
         $(COMMENT_ACTIONS_BAR).shouldBe(visible);
         $(COMMENT_FILE_INPUT).uploadFile(file);
-        $(UPLOAD_NOTIFICATION).shouldBe(visible);
         $(COMMENT_SAVE_BUTTON).shouldBe(clickable).click();
         $(byText("несколько секунд назад")).shouldBe(visible);
         return this;
@@ -247,6 +245,8 @@ public class WorkspacePage {
 
     @Step("Checking comment added status...")
     public boolean isCommentAdded(String text, String fileName) {
+        refresh();
+        $x(format(COMMENT_SELECT_LIST, text)).shouldBe(visible);
         log.info("Checking comment added status...");
         ElementsCollection comments = $$(CARD_COMMENT_LIST);
         for (SelenideElement comment : comments) {

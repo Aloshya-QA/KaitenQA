@@ -17,7 +17,8 @@ public class LoginTest extends BaseTest {
 
     @Test(
             testName = "Check successful login with pin",
-            groups = {"Smoke", "Regression", "Pin"}
+            groups = {"Smoke", "Regression", "Pin"},
+            priority = 1
     )
     public void checkSuccessLoginWithPin() {
         loginPage
@@ -31,7 +32,8 @@ public class LoginTest extends BaseTest {
 
     @Test(
             testName = "Check successful login with password",
-            groups = {"Regression", "Second"}
+            groups = {"Regression", "Second"},
+            priority = 2
     )
     public void checkSuccessLoginWithPassword() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
@@ -41,7 +43,8 @@ public class LoginTest extends BaseTest {
 
     @Test(
             testName = "Check login with wrong password",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 3
     )
     public void checkLoginWithWrongPassword() {
         loginStep.authWithPassword(email, workspace, wrongPassword);
@@ -51,7 +54,8 @@ public class LoginTest extends BaseTest {
 
     @Test(
             testName = "Check login with wrong pin",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 4
     )
     public void checkLoginWithWrongPin() {
         loginPage
@@ -65,7 +69,8 @@ public class LoginTest extends BaseTest {
 
     @Test(
             testName = "Check login with wrong email",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 5
     )
     public void checkLoginWithWrongEmail() {
         loginStep.authWithPassword(wrongEmail, workspace, kaitenPassword);
@@ -75,7 +80,8 @@ public class LoginTest extends BaseTest {
 
     @Test(
             testName = "Check logout",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 6
     )
     public void checkLogout() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);

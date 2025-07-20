@@ -38,7 +38,8 @@ public class KaitenApiTest extends BaseApiTest {
 
     @Test(
             testName = "Check creating workspace",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 1
     )
     public void checkCreatingWorkspace() {
         CreateWorkspaceRq rq = CreateWorkspaceRq.builder()
@@ -50,7 +51,8 @@ public class KaitenApiTest extends BaseApiTest {
 
     @Test(
             testName = "Check creating board",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 2
     )
     public void checkCreatingBoard() {
         List<Column> columns = List.of(
@@ -76,7 +78,8 @@ public class KaitenApiTest extends BaseApiTest {
 
     @Test(
             testName = "Check creating card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 3
     )
     public void checkCreatingCard() {
         int boardId = getBoardId(token, workspace, workspaceName, boardName);
@@ -91,7 +94,8 @@ public class KaitenApiTest extends BaseApiTest {
 
     @Test(
             testName = "Check adding comment to card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 4
     )
     public void checkAddCommentToCard() {
         AddCardCommentRq rq = AddCardCommentRq.builder()
@@ -104,7 +108,8 @@ public class KaitenApiTest extends BaseApiTest {
 
     @Test(
             testName = "Check adding comment with file to card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 5
     )
     public void checkAddCommentWithFile() {
         AddCardCommentRq rq = AddCardCommentRq.builder()
@@ -117,7 +122,8 @@ public class KaitenApiTest extends BaseApiTest {
 
     @Test(
             testName = "Check adding description and asap to card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 6
     )
     public void checkAddCardDescriptionAndAsap() {
         UpdateCardRq rq = UpdateCardRq.builder()
@@ -133,7 +139,8 @@ public class KaitenApiTest extends BaseApiTest {
 
     @Test(
             testName = "Check adding link to card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 7
     )
     public void checkAddLinkToCard() {
         AddCardLinkRq rq = AddCardLinkRq.builder()
@@ -149,7 +156,8 @@ public class KaitenApiTest extends BaseApiTest {
 
     @Test(
             testName = "Check adding tag to card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 8
     )
     public void checkAddTagToCard() {
         AddCardTagsRq rq = AddCardTagsRq.builder()
@@ -161,7 +169,8 @@ public class KaitenApiTest extends BaseApiTest {
 
     @Test(
             testName = "Check adding checklist to card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 9
     )
     public void checkAddCardChecklist() {
         AddCardChecklistRq rq = AddCardChecklistRq.builder()
@@ -189,7 +198,8 @@ public class KaitenApiTest extends BaseApiTest {
 
     @Test(
             testName = "Check deleting card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 10
     )
     public void checkDeletingCard() {
         int boardId = getBoardId(token, workspace, workspaceName, boardName);

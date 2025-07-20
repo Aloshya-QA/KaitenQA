@@ -2,7 +2,10 @@ package factory;
 
 import net.datafaker.Faker;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class DataFactory {
 
@@ -19,15 +22,22 @@ public class DataFactory {
     }
 
     public String generatePassword() {
-        return faker
-                .internet()
-                .password(
-                        8,
-                        15,
-                        true,
-                        true,
-                        true
-                );
+        String upper = faker.letterify("?").toUpperCase();
+        String lower = faker.letterify("?").toLowerCase();
+        String digit = faker.number().digit();
+        String rest = faker.bothify("???????");
+
+        String combined = upper + lower + digit + rest;
+
+        List<Character> chars = combined.chars()
+                .mapToObj(c -> (char) c)
+                .collect(Collectors.toList());
+        Collections.shuffle(chars);
+
+        return chars.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining())
+                .substring(0, 10);
     }
 
     public String generateWorkspaceName() {

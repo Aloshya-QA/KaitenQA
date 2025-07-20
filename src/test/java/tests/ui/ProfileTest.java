@@ -20,7 +20,8 @@ public class ProfileTest extends BaseTest{
     
     @Test(
             testName = "Check switching theme",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 1
     )
     public void checkSwitchTheme() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
@@ -37,7 +38,8 @@ public class ProfileTest extends BaseTest{
 
     @Test(
             testName = "Check changing username",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 2
     )
     public void checkChangeUserName() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
@@ -51,7 +53,8 @@ public class ProfileTest extends BaseTest{
 
     @Test(
             testName = "Check changing avatar",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 3
     )
     public void checkChangeAvatar() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
@@ -65,7 +68,8 @@ public class ProfileTest extends BaseTest{
 
     @Test(
             testName = "Check changing password",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 4
     )
     public void checkChangeAccountPassword() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);

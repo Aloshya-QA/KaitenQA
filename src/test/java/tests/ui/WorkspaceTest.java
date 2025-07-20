@@ -19,7 +19,8 @@ public class WorkspaceTest extends BaseTest {
 
     @Test(
             testName = "Check filtering by tag",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 1
     )
     public void checkFilteringByTag() {
         SoftAssertions soft = new SoftAssertions();
@@ -34,7 +35,8 @@ public class WorkspaceTest extends BaseTest {
 
     @Test(
             testName = "Check filtering by card name",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 2
     )
     public void checkFilteringByCardName() {
         SoftAssertions soft = new SoftAssertions();
@@ -49,7 +51,8 @@ public class WorkspaceTest extends BaseTest {
 
     @Test(
             testName = "Check search by card name",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 3
     )
     public void checkSearchByCardName() {
         SoftAssertions soft = new SoftAssertions();
@@ -64,7 +67,8 @@ public class WorkspaceTest extends BaseTest {
 
     @Test(
             testName = "Check creating custom filter",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 4
     )
     public void checkCreatingCustomFilter() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
@@ -78,7 +82,8 @@ public class WorkspaceTest extends BaseTest {
 
     @Test(
             testName = "Check filtering by custom filter",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 5
     )
     public void checkSearchByCustomFilter() {
         SoftAssertions soft = new SoftAssertions();
@@ -98,7 +103,8 @@ public class WorkspaceTest extends BaseTest {
 
     @Test(
             testName = "Check opening card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 6
     )
     public void checkOpenCard() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
@@ -110,7 +116,8 @@ public class WorkspaceTest extends BaseTest {
 
     @Test(
             testName = "Check closing card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 7
     )
     public void checkCloseCard() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
@@ -125,7 +132,8 @@ public class WorkspaceTest extends BaseTest {
 
     @Test(
             testName = "Check drag and drop card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 8
     )
     public void checkDragAndDropCard() {
         SoftAssertions soft = new SoftAssertions();
@@ -142,7 +150,8 @@ public class WorkspaceTest extends BaseTest {
 
     @Test(
             testName = "Check adding comment to card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 9
     )
     public void checkAddComment() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
@@ -157,7 +166,8 @@ public class WorkspaceTest extends BaseTest {
 
     @Test(
             testName = "Check adding comment with file to card",
-            groups = {"Regression"}
+            groups = {"Regression"},
+            priority = 10
     )
     public void checkAddCommentWithFile() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
