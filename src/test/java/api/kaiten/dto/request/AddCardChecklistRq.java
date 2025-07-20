@@ -12,8 +12,4 @@ public class AddCardChecklistRq {
     @Expose
     @SerializedName("name")
     public String name;
-
-    @Expose
-    @SerializedName("sort_order")
-    public float position;
 }

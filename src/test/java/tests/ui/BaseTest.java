@@ -3,15 +3,9 @@ package tests.ui;
 import api.tempMail.TempMailService;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.logevents.SelenideLogger;
-import factory.DataFactory;
-import factory.DataGenerator;
-import initialization.InitSteps;
-import io.qameta.allure.restassured.AllureRestAssured;
 import io.qameta.allure.selenide.AllureSelenide;
-import io.restassured.RestAssured;
 import lombok.extern.log4j.Log4j2;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.edge.EdgeOptions;
+import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.*;
 import pages.LoginPage;
 import pages.ProfilePage;
@@ -20,12 +14,11 @@ import pages.WorkspacePage;
 import steps.LoginStep;
 import utils.TestListener;
 
-import java.util.Collections;
-import java.util.HashMap;
-
-import static api.tempMail.TempMailService.getFirstDomain;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-import static utils.PropertyReader.*;
+import static initialization.BrowserOptions.getChromeOptions;
+import static initialization.BrowserOptions.getEdgeOptions;
+import static initialization.Init.startInit;
+import static utils.PropertyReader.getProperty;
 
 @Log4j2
 @Listeners(TestListener.class)
@@ -43,23 +36,19 @@ public abstract class BaseTest {
     String mailboxApiToken;
     String kaitenApiToken;
     String kaitenPassword;
+    String workspaceId;
+    String firstCardName;
+    String cardTag;
+    String workspaceName;
+    String firstCardId;
 
     TempMailService tempMail;
-    DataFactory data;
+    SoftAssertions soft;
 
     @Parameters({"browser"})
     @BeforeMethod(alwaysRun = true)
     public void setup(@Optional("chrome") String browser) {
-        this.email = getProperty("email");
-        this.mailboxPassword = getProperty("mailboxPassword");
-        this.workspace = getProperty("workspace");
-        this.mailboxApiToken = getProperty("mailboxApiToken");
-        this.kaitenApiToken = getProperty("kaitenApiToken");
-        this.kaitenPassword = getProperty("kaitenPassword");
-        this.tempMail = new TempMailService();
-        this.data = DataGenerator.dataFactory();
-
-        RestAssured.filters(new AllureRestAssured());
+        initVariables();
         SelenideLogger.addListener("AllureSelenide", new AllureSelenide()
                 .screenshots(true)
                 .savePageSource(false));
@@ -88,89 +77,29 @@ public abstract class BaseTest {
     }
 
     @BeforeSuite(alwaysRun = true)
-    public void globalInit() {
-        if (getProperty("kaitenApiToken") == null) {
-            log.info("Start global initialization...");
-            log.warn("Generating Test Data...");
-            generateData();
-            setup("chrome");
-            log.info("Start creating mailbox...");
-            InitSteps.createMailBox(tempMail);
-            log.info("Start receiving mailbox API token...");
-            InitSteps.createMailApiToken(tempMail);
-            log.info("Start registering & activating Kaiten account...");
-            InitSteps.registerAndActivate(email, workspace, tempMail);
-            log.info("Start creating Kaiten API token...");
-            InitSteps.createKaitenApiToken(workspace);
-            log.info("Start creating Kaiten account password");
-            InitSteps.setAccountPassword(getProperty("kaitenApiToken"), workspace, kaitenPassword);
-            if (getWebDriver() != null) {
-                log.info("Global initialization complete");
-                getWebDriver().quit();
-            }
-        }
-        log.info("Skip global initialization");
+    private void init() throws InterruptedException {
+        startInit();
     }
 
-    private void generateData() {
-        String
-                email = DataGenerator.generateEmailLogin(),
-                mailboxPassword = DataGenerator.generatePassword(),
-                kaitenPassword = DataGenerator.generatePassword(),
-                workspace = DataGenerator.generateWorkspaceName();
-
-        setProperty("email", email + getFirstDomain());
-        setProperty("mailboxPassword", mailboxPassword);
-        setProperty("kaitenPassword", kaitenPassword);
-        setProperty("workspace", workspace);
-        saveProperties();
-
-        log.warn("Generating Test Data complete");
-    }
-
-    private static ChromeOptions getChromeOptions() {
-        log.info("Chrome flags initialization");
-        ChromeOptions options = new ChromeOptions();
-        HashMap<String, Object> chromePrefs = new HashMap<>();
-        chromePrefs.put("credentials_enable_service", false);
-        chromePrefs.put("profile.password_manager_enabled", false);
-        options.setExperimentalOption("prefs", chromePrefs);
-        options.addArguments("--lang=en");
-        options.addArguments("--incognito");
-        options.addArguments("--disable-notifications");
-        options.addArguments("--disable-popup-blocking");
-        options.addArguments("--disable-infobars");
-        options.addArguments("--headless");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--disable-gpu");
-        options.addArguments("--start-maximized");
-        options.addArguments("--disable-blink-features=AutomationControlled");
-        options.setExperimentalOption("excludeSwitches",
-                Collections.singletonList("enable-automation"));
-        return options;
-    }
-
-    private static EdgeOptions getEdgeOptions() {
-        log.info("Edge flags initialization");
-        EdgeOptions options = new EdgeOptions();
-        options.addArguments("--lang=en");
-        options.addArguments("--start-maximized");
-        options.addArguments("--headless");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--disable-gpu");
-        options.addArguments("--disable-blink-features=AutomationControlled");
-        options.setExperimentalOption("excludeSwitches",
-                Collections.singletonList("enable-automation"));
-        return options;
+    private void initVariables() {
+        this.email = getProperty("email");
+        this.mailboxPassword = getProperty("mailboxPassword");
+        this.workspace = getProperty("workspace");
+        this.mailboxApiToken = getProperty("mailboxApiToken");
+        this.kaitenApiToken = getProperty("kaitenApiToken");
+        this.kaitenPassword = getProperty("kaitenPassword");
+        this.workspaceId = getProperty("workspaceId");
+        this.cardTag = getProperty("card_tag");
+        this.firstCardName = getProperty("card_0_name");
+        this.firstCardId = getProperty("card_0_id");
+        this.workspaceName = getProperty("workspaceName");
+        this.tempMail = new TempMailService();
+        this.soft = new SoftAssertions();
     }
 
     @AfterMethod(alwaysRun = true)
     public void TearDawn() {
         if (getWebDriver() != null) {
-//            PropertyReader.clearProperties();
-//            Thread.sleep(10000);
             log.info("Closing browser");
             getWebDriver().quit();
         }

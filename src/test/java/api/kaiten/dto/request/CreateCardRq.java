@@ -16,4 +16,8 @@ public class CreateCardRq {
     @Expose
     @SerializedName("title")
     public String title;
+
+    @Expose
+    @SerializedName("column_id")
+    public int columnId;
 }

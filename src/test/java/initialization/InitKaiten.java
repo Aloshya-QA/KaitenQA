@@ -11,7 +11,7 @@ import pages.WorkspacePage;
 import static utils.PropertyReader.*;
 
 @Log4j2
-public final class InitSteps {
+public final class InitKaiten {
 
     public static void createMailBox(TempMailService mail) {
         mail.createMail();

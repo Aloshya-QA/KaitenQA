@@ -14,10 +14,6 @@ public class AddCardChecklistItemRq {
     public String text;
 
     @Expose
-    @SerializedName("sort_order")
-    public float position;
-
-    @Expose
     @SerializedName("checked")
     public boolean checked;
 }
