@@ -1,7 +1,7 @@
 package tests.ui;
 
+import factory.DataFactory;
 import lombok.extern.log4j.Log4j2;
-import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -11,29 +11,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Log4j2
 public class ProfileTest extends BaseTest{
 
-    File pic = new File("src/test/resources/images/photo.jpg");
+    File pic = new File("src/test/resources/images/1.jpg");
+    DataFactory data = new DataFactory();
 
+    private final String
+            username = data.generateUsername(),
+            newPassword = data.generatePassword();
+    
     @Test(
-            testName = "Checking switching theme",
+            testName = "Check switching theme",
             groups = {"Regression"}
     )
     public void checkSwitchTheme() {
-        SoftAssertions softAssert = new SoftAssertions();
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage.isOpened();
         profilePage
                 .openPage(workspace)
                 .isOpened()
                 .switchTheme("Светлая");
-        assertThat(profilePage.switchThemeSuccessful("rgba(255, 255, 255, 1)")).isTrue();
+        soft.assertThat(profilePage.switchThemeSuccessful("Светлая")).isTrue();
         profilePage.switchTheme("Тёмная");
-        assertThat(profilePage.switchThemeSuccessful("rgba(33, 33, 33, 1)")).isTrue();
-        softAssert.assertAll();
-
+        soft.assertThat(profilePage.switchThemeSuccessful("Тёмная")).isTrue();
+        soft.assertAll();
     }
 
     @Test(
-            testName = "Checking changing username",
+            testName = "Check changing username",
             groups = {"Regression"}
     )
     public void checkChangeUserName() {
@@ -42,12 +45,12 @@ public class ProfileTest extends BaseTest{
         profilePage
                 .openPage(workspace)
                 .isOpened()
-                .changeUserName(data.getUsername());
-        assertThat(profilePage.changeNameSuccessful(data.getUsername())).isTrue();
+                .changeUserName(username);
+        assertThat(profilePage.changeNameSuccessful(username)).isTrue();
     }
 
     @Test(
-            testName = "Checking changing avatar",
+            testName = "Check changing avatar",
             groups = {"Regression"}
     )
     public void checkChangeAvatar() {
@@ -61,7 +64,7 @@ public class ProfileTest extends BaseTest{
     }
 
     @Test(
-            testName = "Checking changing password",
+            testName = "Check changing password",
             groups = {"Regression"}
     )
     public void checkChangeAccountPassword() {
@@ -70,7 +73,7 @@ public class ProfileTest extends BaseTest{
         profilePage
                 .openPage(workspace)
                 .isOpened()
-                .changeAccountPassword(kaitenPassword, data.getPassword());
+                .changeAccountPassword(kaitenPassword, newPassword);
         assertThat(profilePage.changeAccountPasswordSuccessful()).isTrue();
     }
 }

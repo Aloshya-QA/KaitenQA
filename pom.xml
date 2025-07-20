@@ -22,7 +22,7 @@
         <yaml.version>2.12.3</yaml.version>
         <rest-assured.version>5.5.5</rest-assured.version>
         <gson.version>2.13.1</gson.version>
-        <javafaker.version>1.0.2</javafaker.version>
+        <datafaker.version>2.4.4</datafaker.version>
     </properties>
 
     <dependencyManagement>
@@ -123,11 +123,11 @@
             <version>${yaml.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
+        <!-- https://mvnrepository.com/artifact/net.datafaker/datafaker -->
         <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>${javafaker.version}</version>
+            <groupId>net.datafaker</groupId>
+            <artifactId>datafaker</artifactId>
+            <version>${datafaker.version}</version>
         </dependency>
     </dependencies>
 

@@ -1,5 +1,6 @@
 package tests.ui;
 
+import factory.DataFactory;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.Test;
 
@@ -9,105 +10,163 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class WorkspaceTest extends BaseTest {
 
-    File pic = new File("src/test/resources/images/photo.jpg");
+    DataFactory data = new DataFactory();
+    File pic = new File("src/test/resources/images/6.jpg");
+    private final String
+            filterName = data.generateTag(),
+            secondFilterName = data.generateTag(),
+            description = data.generateDescription();
 
-    @Test
+    @Test(
+            testName = "Check filtering by tag",
+            groups = {"Regression"}
+    )
     public void checkFilteringByTag() {
         SoftAssertions soft = new SoftAssertions();
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage.isOpened()
-                .openWorkspace("624992");
-        soft.assertThat(workspacePage.getCountCardByTag("test")).isEqualTo(3);
-        workspacePage.filteringByTag("test");
-        soft.assertThat(workspacePage.getCountCardByTag("test")).isEqualTo(3);
+                .openWorkspace(workspace, workspaceId);
+        soft.assertThat(workspacePage.getCountCardByTag(cardTag)).isEqualTo(2);
+        workspacePage.filteringByTag(cardTag);
+        soft.assertThat(workspacePage.getCountCardByTag(cardTag)).isEqualTo(2);
         soft.assertAll();
     }
 
-    @Test
+    @Test(
+            testName = "Check filtering by card name",
+            groups = {"Regression"}
+    )
     public void checkFilteringByCardName() {
         SoftAssertions soft = new SoftAssertions();
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage.isOpened()
-                .openWorkspace("624992");
-        soft.assertThat(workspacePage.getCountCardByTitle("Card from IDE")).isEqualTo(3);
-        workspacePage.filteringByTitle("Card from IDE");
-        soft.assertThat(workspacePage.getCountCardByTitle("Card from IDE")).isEqualTo(3);
+                .openWorkspace(workspace, workspaceId);
+        soft.assertThat(workspacePage.getCountCardByTitle(firstCardName)).isEqualTo(2);
+        workspacePage.filteringByTitle(firstCardName);
+        soft.assertThat(workspacePage.getCountCardByTitle(firstCardName)).isEqualTo(2);
         soft.assertAll();
     }
 
-    @Test
+    @Test(
+            testName = "Check search by card name",
+            groups = {"Regression"}
+    )
     public void checkSearchByCardName() {
         SoftAssertions soft = new SoftAssertions();
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage.isOpened()
-                .openWorkspace("624992");
-        soft.assertThat(workspacePage.getCountCardByTitle("Card from IDE")).isEqualTo(3);
-        workspacePage.searchByText("Card from IDE", "Workspace from IDE");
-        soft.assertThat(workspacePage.getNumberOfFoundCards()).isEqualTo(3);
+                .openWorkspace(workspace, workspaceId);
+        soft.assertThat(workspacePage.getCountCardByTitle(firstCardName)).isEqualTo(2);
+        workspacePage.searchByText(firstCardName, workspaceName);
+        soft.assertThat(workspacePage.getNumberOfFoundCards()).isEqualTo(2);
         soft.assertAll();
     }
 
-    @Test
+    @Test(
+            testName = "Check creating custom filter",
+            groups = {"Regression"}
+    )
     public void checkCreatingCustomFilter() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage.isOpened()
-                .openWorkspace("624992")
-                .filteringByTag("test")
-                .filteringByTitle("Card from IDE")
-                .saveCustomFilter("Custom");
-        assertThat(workspacePage.getCustomFilters().contains("Custom")).isTrue();
+                .openWorkspace(workspace, workspaceId)
+                .filteringByTag(cardTag)
+                .filteringByTitle(firstCardName)
+                .saveCustomFilter(filterName);
+        assertThat(workspacePage.getCustomFilters().contains(filterName)).isTrue();
     }
 
-    @Test
+    @Test(
+            testName = "Check filtering by custom filter",
+            groups = {"Regression"}
+    )
     public void checkSearchByCustomFilter() {
         SoftAssertions soft = new SoftAssertions();
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage.isOpened()
-                .openWorkspace("624992");
-        soft.assertThat(workspacePage.getCountCardByTitleAndTag("Card from IDE", "Feature")).isEqualTo(2);
+                .openWorkspace(workspace, workspaceId);
+        soft.assertThat(workspacePage.getCountCardByTitleAndTag(firstCardName, cardTag)).isEqualTo(2);
         workspacePage
-                .filteringByTag("Feature")
-                .filteringByTitle("Card from IDE")
-                .saveCustomFilter("MyFilter2")
+                .filteringByTag(cardTag)
+                .filteringByTitle(firstCardName)
+                .saveCustomFilter(secondFilterName)
                 .clearFilters()
-                .chooseCustomFilter("MyFilter2");
+                .chooseCustomFilter(secondFilterName);
         soft.assertThat(workspacePage.getCountCards()).isEqualTo(2);
         soft.assertAll();
     }
 
-    @Test
+    @Test(
+            testName = "Check opening card",
+            groups = {"Regression"}
+    )
     public void checkOpenCard() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage.isOpened()
-                .openWorkspace("624992")
+                .openWorkspace(workspace, workspaceId)
                 .openCardByIndex(5);
         assertThat(workspacePage.isCardModalOpened()).isTrue();
     }
 
-    @Test
+    @Test(
+            testName = "Check closing card",
+            groups = {"Regression"}
+    )
+    public void checkCloseCard() {
+        loginStep.authWithPassword(email, workspace, kaitenPassword);
+        workspacePage.isOpened()
+                .openWorkspace(workspace, workspaceId)
+                .openCardByIndex(5)
+                .cardIsOpened()
+                .closeCardModal()
+                .cardModalIsClosed();
+        assertThat(workspacePage.isCardModalOpened()).isFalse();
+    }
+
+    @Test(
+            testName = "Check drag and drop card",
+            groups = {"Regression"}
+    )
     public void checkDragAndDropCard() {
         SoftAssertions soft = new SoftAssertions();
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage
                 .isOpened()
-                .openWorkspace("624992");
-        soft.assertThat(workspacePage.getCountCardsInColumn(0)).isEqualTo(0);
+                .openWorkspace(workspace, workspaceId);
+        soft.assertThat(workspacePage.getCountCardsInColumn(1)).isEqualTo(2);
         workspacePage
-                .dragAndDropCardToColumn(1, 0);
-        soft.assertThat(workspacePage.getCountCardsInColumn(0)).isEqualTo(1);
+                .dragAndDropCardToColumn(0, 3);
+        soft.assertThat(workspacePage.getCountCardsInColumn(3)).isEqualTo(3);
         soft.assertAll();
     }
 
-    @Test
+    @Test(
+            testName = "Check adding comment to card",
+            groups = {"Regression"}
+    )
     public void checkAddComment() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage
                 .isOpened()
-                .openWorkspace("624992")
+                .openWorkspace(workspace, workspaceId)
                 .openCardByIndex(0)
                 .cardIsOpened()
-                .addComment("Hello from IDE")
-                .addFileInComment(pic);
+                .addComment(description);
+        assertThat(workspacePage.isCommentAdded(description)).isTrue();
+    }
 
+    @Test(
+            testName = "Check adding comment with file to card",
+            groups = {"Regression"}
+    )
+    public void checkAddCommentWithFile() {
+        loginStep.authWithPassword(email, workspace, kaitenPassword);
+        workspacePage
+                .isOpened()
+                .openWorkspace(workspace, workspaceId)
+                .openCardByIndex(0)
+                .cardIsOpened()
+                .addComment(description, pic);
+        assertThat(workspacePage.isCommentAdded(description, pic.getName())).isTrue();
     }
 }

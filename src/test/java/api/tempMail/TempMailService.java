@@ -15,6 +15,7 @@ import static utils.PropertyReader.*;
 
 @Log4j2
 public class TempMailService {
+
     String
             email = getProperty("email"),
             mailboxPassword = getProperty("mailboxPassword");
@@ -22,15 +23,6 @@ public class TempMailService {
     private final static String
             PIN_CODE_SUBJECT = "PIN-код для аутентификации в Kaiten",
             ACTIVATE_SUBJECT = "Активация компании";
-
-//    public static String getFirstDomain() {
-//        GetDomainsRs response = getDomains();
-//        if (response != null && response.domains != null && !response.domains.isEmpty()) {
-//            return response.domains.get(0).domain;
-//        } else {
-//            throw new RuntimeException("No domains returned from API");
-//        }
-//    }
 
     public static String getFirstDomain() {
         String domain = getDomains().domains.get(0).domain;
@@ -100,6 +92,7 @@ public class TempMailService {
         if (latestMessage == null) {
             latestMessage = waitForNewCompanyUrl();
         }
+
         return latestMessage;
     }
 

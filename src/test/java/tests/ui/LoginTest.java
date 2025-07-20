@@ -1,13 +1,22 @@
 package tests.ui;
 
+import factory.DataFactory;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class LoginTest extends BaseTest {
 
+    DataFactory data = new DataFactory();
+
+    private final String
+            wrongPassword = data.generatePassword(),
+            wrongPin = data.generatePin(),
+            wrongEmail = data.generateEmail();
+
+
     @Test(
-            testName = "Successful login with pin",
+            testName = "Check successful login with pin",
             groups = {"Smoke", "Regression", "Pin"}
     )
     public void checkSuccessLoginWithPin() {
@@ -16,30 +25,32 @@ public class LoginTest extends BaseTest {
                 .isOpened()
                 .inputEmail(email)
                 .inputPin(tempMail.getPin());
+        workspacePage.isOpened();
         assertThat(workspacePage.isWorkspaceOpened()).isTrue();
     }
 
     @Test(
-            testName = "Successful login with password",
+            testName = "Check successful login with password",
             groups = {"Regression", "Second"}
     )
     public void checkSuccessLoginWithPassword() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
+        workspacePage.isOpened();
         assertThat(workspacePage.isWorkspaceOpened()).isTrue();
     }
 
     @Test(
-            testName = "Checking login with wrong password",
+            testName = "Check login with wrong password",
             groups = {"Regression"}
     )
     public void checkLoginWithWrongPassword() {
-        loginStep.authWithPassword(email, workspace, data.getPassword());
+        loginStep.authWithPassword(email, workspace, wrongPassword);
         assertThat(loginPage.getErrorMessage())
                 .contains("Login or password not valid");
     }
 
     @Test(
-            testName = "Checking login with wrong pin",
+            testName = "Check login with wrong pin",
             groups = {"Regression"}
     )
     public void checkLoginWithWrongPin() {
@@ -47,23 +58,23 @@ public class LoginTest extends BaseTest {
                 .openPage(workspace)
                 .isOpened()
                 .inputEmail(email)
-                .inputPin(data.getPin());
+                .inputPin(wrongPin);
         assertThat(loginPage.getErrorMessage())
                 .contains("PIN code is incorrect");
     }
 
     @Test(
-            testName = "Checking login with wrong email",
+            testName = "Check login with wrong email",
             groups = {"Regression"}
     )
     public void checkLoginWithWrongEmail() {
-        loginStep.authWithPassword(data.getEmail(), workspace, kaitenPassword);
+        loginStep.authWithPassword(wrongEmail, workspace, kaitenPassword);
         assertThat(loginPage.getErrorMessage())
                 .contains("Login or password not valid");
     }
 
     @Test(
-            testName = "Checking logout",
+            testName = "Check logout",
             groups = {"Regression"}
     )
     public void checkLogout() {
