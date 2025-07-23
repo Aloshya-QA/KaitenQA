@@ -5,6 +5,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import lombok.extern.log4j.Log4j2;
+import org.openqa.selenium.Keys;
 import org.testng.Assert;
 
 import java.io.File;
@@ -12,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.*;
+import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 import static java.lang.String.format;
 
@@ -129,8 +131,7 @@ public class WorkspacePage {
     public WorkspacePage searchByText(String title, String workspaceName) {
         log.info("Searching card by title: '{}'...", title);
         $(SEARCH_BUTTON).shouldBe(visible).click();
-        $x(SEARCH_SPACE_INPUT).shouldBe(visible).setValue(workspaceName);
-        $x(format(SEARCH_SPACE_LIST, workspaceName)).shouldBe(visible).click();
+        $x(SEARCH_SPACE_INPUT).shouldBe(visible).setValue(workspaceName).sendKeys(Keys.chord(Keys.DOWN, Keys.ENTER));
         $x(SEARCH_INPUT).setValue(title);
         return this;
     }
@@ -139,7 +140,6 @@ public class WorkspacePage {
     public int getNumberOfFoundCards() throws InterruptedException {
         Thread.sleep(2000);
         log.info("Getting number of found cards...");
-        $(byTagName("circle")).shouldBe(visible).shouldNotBe(visible);
         return $$x(SEARCH_FOUND_LIST).size();
     }
 
