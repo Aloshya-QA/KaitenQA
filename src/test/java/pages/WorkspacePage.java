@@ -162,7 +162,6 @@ public class WorkspacePage {
         int counter = 0;
         $(CARD_LIST).shouldBe(visible);
         ElementsCollection cards = $$(CARD_LIST);
-        System.out.println("Cards size: " + cards.size());
         for (SelenideElement card : cards) {
             String cardTitle = card.$(CARD_TITLE).shouldBe(visible).getText();
             ElementsCollection allCardTags = card.$$(CARD_TAG_LIST);
@@ -211,8 +210,9 @@ public class WorkspacePage {
     }
 
     @Step("Getting count cards in #{column} column...")
-    public int getCountCardsInColumn(int column) {
+    public int getCountCardsInColumn(int column) throws InterruptedException {
         log.info("Getting count cards in #{} column...", column);
+        Thread.sleep(2000);
         $(CARD_LIST).shouldBe(visible);
         ElementsCollection columns = $$(COLUMN_LIST);
         return columns.get(column - 1).$$(CARD_LIST).size();
@@ -227,14 +227,13 @@ public class WorkspacePage {
     }
 
     @Step("Adding comment with file to card...")
-    public WorkspacePage addComment(String text, File file) throws InterruptedException {
+    public WorkspacePage addComment(String text, File file) {
         log.info("Adding comment with file to card...");
         $(COMMENT_INPUT).shouldBe(visible).setValue(text);
         $(COMMENT_ACTIONS_BAR).shouldBe(visible);
         $(COMMENT_FILE_INPUT).uploadFile(file);
         $(COMMENT_SAVE_BUTTON).shouldBe(clickable).click();
         $(byText("несколько секунд назад")).shouldBe(visible);
-        Thread.sleep(3000);
         return this;
     }
 
@@ -246,7 +245,8 @@ public class WorkspacePage {
 
     @Step("Checking comment added status...")
     public boolean isCommentAdded(String text, String fileName) {
-        refresh();
+        $(byText("Файл(ы) загружен.")).shouldBe(visible);
+        $(byText("Файл(ы) загружен.")).shouldNotBe(visible);
         $x(format(COMMENT_SELECT_LIST, text)).shouldBe(visible);
         log.info("Checking comment added status...");
         ElementsCollection comments = $$(CARD_COMMENT_LIST);

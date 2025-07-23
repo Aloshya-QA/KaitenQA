@@ -169,7 +169,7 @@ public class WorkspaceTest extends BaseTest {
             groups = {"Regression"},
             priority = 10
     )
-    public void checkAddCommentWithFile() throws InterruptedException {
+    public void checkAddCommentWithFile() {
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage
                 .isOpened()

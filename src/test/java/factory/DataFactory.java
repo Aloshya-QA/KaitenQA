@@ -101,4 +101,8 @@ public class DataFactory {
     public String generateTag() {
         return faker.color().name();
     }
+
+    public String generateSecondTag() {
+        return faker.animal().name();
+    }
 }
