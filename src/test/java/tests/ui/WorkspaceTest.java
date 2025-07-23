@@ -22,7 +22,7 @@ public class WorkspaceTest extends BaseTest {
             groups = {"Regression"},
             priority = 1
     )
-    public void checkFilteringByTag() {
+    public void checkFilteringByTag() throws InterruptedException {
         SoftAssertions soft = new SoftAssertions();
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage.isOpened()
@@ -38,7 +38,7 @@ public class WorkspaceTest extends BaseTest {
             groups = {"Regression"},
             priority = 2
     )
-    public void checkFilteringByCardName() {
+    public void checkFilteringByCardName() throws InterruptedException {
         SoftAssertions soft = new SoftAssertions();
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage.isOpened()
@@ -54,7 +54,7 @@ public class WorkspaceTest extends BaseTest {
             groups = {"Regression"},
             priority = 3
     )
-    public void checkSearchByCardName() {
+    public void checkSearchByCardName() throws InterruptedException {
         SoftAssertions soft = new SoftAssertions();
         loginStep.authWithPassword(email, workspace, kaitenPassword);
         workspacePage.isOpened()

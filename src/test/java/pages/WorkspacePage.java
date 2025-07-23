@@ -136,21 +136,24 @@ public class WorkspacePage {
     }
 
     @Step("Getting number of found cards...")
-    public int getNumberOfFoundCards() {
+    public int getNumberOfFoundCards() throws InterruptedException {
+        Thread.sleep(2000);
         log.info("Getting number of found cards...");
         $(byTagName("circle")).shouldBe(visible).shouldNotBe(visible);
         return $$x(SEARCH_FOUND_LIST).size();
     }
 
     @Step("Getting count cards by tag: '{tag}'...")
-    public int getCountCardByTag(String tag) {
+    public int getCountCardByTag(String tag) throws InterruptedException {
+        Thread.sleep(2000);
         log.info("Getting count cards by tag: '{}'...", tag);
         $(CARD_LANES).shouldBe(visible);
         return $$x(format(CARD_TAG_SEARCH, tag)).size();
     }
 
     @Step("Getting count cards by title: '{title}'...")
-    public int getCountCardByTitle(String title) {
+    public int getCountCardByTitle(String title) throws InterruptedException {
+        Thread.sleep(2000);
         log.info("Getting count cards by title: '{}'...", title);
         $(CARD_LANES).shouldBe(visible);
         return $$x(format(CARD_TITLE_LIST, title)).size();
