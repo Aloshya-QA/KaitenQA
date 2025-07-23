@@ -5,6 +5,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import lombok.extern.log4j.Log4j2;
+import org.openqa.selenium.Keys;
 import org.testng.Assert;
 
 import java.io.File;
@@ -12,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.*;
+import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Selectors.byXpath;
 import static com.codeborne.selenide.Selenide.*;
 import static java.lang.String.format;
 
@@ -129,28 +131,29 @@ public class WorkspacePage {
     public WorkspacePage searchByText(String title, String workspaceName) {
         log.info("Searching card by title: '{}'...", title);
         $(SEARCH_BUTTON).shouldBe(visible).click();
-        $x(SEARCH_SPACE_INPUT).shouldBe(visible).setValue(workspaceName);
-        $x(format(SEARCH_SPACE_LIST, workspaceName)).shouldBe(visible).click();
+        $x(SEARCH_SPACE_INPUT).shouldBe(visible).setValue(workspaceName).sendKeys(Keys.chord(Keys.DOWN, Keys.ENTER));
         $x(SEARCH_INPUT).setValue(title);
         return this;
     }
 
     @Step("Getting number of found cards...")
-    public int getNumberOfFoundCards() {
+    public int getNumberOfFoundCards() throws InterruptedException {
+        Thread.sleep(2000);
         log.info("Getting number of found cards...");
-        $(byTagName("circle")).shouldBe(visible).shouldNotBe(visible);
         return $$x(SEARCH_FOUND_LIST).size();
     }
 
     @Step("Getting count cards by tag: '{tag}'...")
-    public int getCountCardByTag(String tag) {
+    public int getCountCardByTag(String tag) throws InterruptedException {
+        Thread.sleep(2000);
         log.info("Getting count cards by tag: '{}'...", tag);
         $(CARD_LANES).shouldBe(visible);
         return $$x(format(CARD_TAG_SEARCH, tag)).size();
     }
 
     @Step("Getting count cards by title: '{title}'...")
-    public int getCountCardByTitle(String title) {
+    public int getCountCardByTitle(String title) throws InterruptedException {
+        Thread.sleep(2000);
         log.info("Getting count cards by title: '{}'...", title);
         $(CARD_LANES).shouldBe(visible);
         return $$x(format(CARD_TITLE_LIST, title)).size();
@@ -162,7 +165,6 @@ public class WorkspacePage {
         int counter = 0;
         $(CARD_LIST).shouldBe(visible);
         ElementsCollection cards = $$(CARD_LIST);
-        System.out.println("Cards size: " + cards.size());
         for (SelenideElement card : cards) {
             String cardTitle = card.$(CARD_TITLE).shouldBe(visible).getText();
             ElementsCollection allCardTags = card.$$(CARD_TAG_LIST);
@@ -211,8 +213,9 @@ public class WorkspacePage {
     }
 
     @Step("Getting count cards in #{column} column...")
-    public int getCountCardsInColumn(int column) {
+    public int getCountCardsInColumn(int column) throws InterruptedException {
         log.info("Getting count cards in #{} column...", column);
+        Thread.sleep(2000);
         $(CARD_LIST).shouldBe(visible);
         ElementsCollection columns = $$(COLUMN_LIST);
         return columns.get(column - 1).$$(CARD_LIST).size();
@@ -227,14 +230,13 @@ public class WorkspacePage {
     }
 
     @Step("Adding comment with file to card...")
-    public WorkspacePage addComment(String text, File file) throws InterruptedException {
+    public WorkspacePage addComment(String text, File file) {
         log.info("Adding comment with file to card...");
         $(COMMENT_INPUT).shouldBe(visible).setValue(text);
         $(COMMENT_ACTIONS_BAR).shouldBe(visible);
         $(COMMENT_FILE_INPUT).uploadFile(file);
         $(COMMENT_SAVE_BUTTON).shouldBe(clickable).click();
         $(byText("несколько секунд назад")).shouldBe(visible);
-        Thread.sleep(3000);
         return this;
     }
 
@@ -246,7 +248,8 @@ public class WorkspacePage {
 
     @Step("Checking comment added status...")
     public boolean isCommentAdded(String text, String fileName) {
-        refresh();
+        $(byText("Файл(ы) загружен.")).shouldBe(visible);
+        $(byText("Файл(ы) загружен.")).shouldNotBe(visible);
         $x(format(COMMENT_SELECT_LIST, text)).shouldBe(visible);
         log.info("Checking comment added status...");
         ElementsCollection comments = $$(CARD_COMMENT_LIST);

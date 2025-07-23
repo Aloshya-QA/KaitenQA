@@ -132,7 +132,7 @@ public class InitWorkspace {
             }
         }
 
-        String sharedTag = data.generateTag();
+        String sharedTag = data.generateSecondTag();
 
         for (int i = 0; i < cardsId.size(); i++) {
             int cardId = cardsId.get(i);
